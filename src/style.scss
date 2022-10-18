@@ -4,6 +4,10 @@
     margin:0;
     padding:0;
 }
+$main-color: rgb(125 148 252);
+$right-color: rgb(109, 247, 144);
+$wrong-color: rgb(247, 109, 109);
+$white-color: white;
 @font-face {
     font-family: 'Roboto-Bold';
     font-style: normal;
@@ -12,7 +16,7 @@
 }
 body{
     font-size: 14px;
-    background-color: rgb(221, 221, 221);
+    background-color: $white-color;
 }
 
 .ff-bold{
@@ -28,20 +32,11 @@ body{
 
 .modalButton{
     flex-grow:1;
-    background-color: rgb(125 148 252);
-    color:white;
+    background-color: $main-color;
+    color:$white-color;
     font-family: 'Roboto-Bold';
 }
-@keyframes open {
-    0% {
-      -webkit-transform: rotateY(0);
-              transform: rotateY(0);
-    }
-    100% {
-      -webkit-transform: rotateY(180deg);
-              transform: rotateY(180deg);
-    }
-}
+
 @keyframes close {
     0% {
         -webkit-transform: rotateY(180deg);
@@ -52,6 +47,18 @@ body{
                 transform: rotateY(0deg);
       }
 }
+@keyframes open {
+    0% {
+      -webkit-transform: rotateY(-80deg);
+              transform: rotateY(-80deg);
+      opacity: 0;
+    }
+    100% {
+      -webkit-transform: rotateY(0);
+              transform: rotateY(0);
+      opacity: 1;
+    }
+  }
 
 .custom-card {
     img{
@@ -65,27 +72,23 @@ body{
     }
     min-height: 170px;
     cursor: pointer;
-    transition: all .3s ease-in-out;
-    &:hover{
-        transform: scale(1.03);
-    }
 }
 .card {
     &-closed{
-        background-color: rgb(125 148 252);
-        border: 4px solid white;
-        animation: close 0.3s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
+        background-color: $main-color;
+        border: 4px solid $white-color;
+        animation: close 0.4s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
     } 
     &-open{
-        background-color: white;
+        background-color: $white-color;
         position: relative;
-        border: 4px solid rgb(125 148 252);
-        animation: open 0.3s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
+        border: 4px solid $main-color;
+        animation: open 0.4s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
     } 
     &-wrong{
-        background-color: rgb(247, 109, 109);
+        background-color: $wrong-color;
     }
     &-right{
-        background-color: rgb(109, 247, 144);
+        background-color: $right-color;
     }
 }

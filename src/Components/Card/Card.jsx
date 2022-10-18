@@ -1,35 +1,35 @@
 import React from "react";
 import PropTypes from "prop-types";
+import classNames from "classnames";
 
-function Card({ id, src, isOpen, isRight, isWrong, cardClick, value }) {
+function Card({ id, src, isActive, isRight, cardClick, value }) {
   const clickHanlder = () => {
-    cardClick(isRight, isWrong, id);
+    cardClick(isActive, isRight, id);
   };
+  const containerClassName = classNames("custom-card", {
+    "card-open": isActive || isRight,
+    "card-closed": !isActive,
+    "card-right": isRight,
+    "card-wrong": isRight === false,
+  });
+  const imgClassName = classNames({
+    "d-none": !isActive && !isRight,
+  });
   return (
-    <div
-      className={`${isOpen || isRight ? "card-open" : "card-closed"} ${
-        isRight ? "card-right" : ""
-      } ${isWrong ? "card-wrong" : ""} custom-card `}
-      onClick={clickHanlder}
-    >
+    <div className={containerClassName} onClick={clickHanlder}>
       <div className="w-100 h-100">
-        <img
-          className={`${isOpen || isRight ? "" : "d-none"}`}
-          src={src}
-          alt={value}
-        />
+        <img className={imgClassName} src={src} alt={value} />
       </div>
     </div>
   );
 }
 
 Card.propTypes = {
-  id: PropTypes.number.isRequired,
-  src: PropTypes.string.isRequired,
-  isOpen: PropTypes.bool.isRequired,
-  isWrong: PropTypes.bool.isRequired,
-  isRight: PropTypes.bool.isRequired,
-  cardClick: PropTypes.func.isRequired,
-  value: PropTypes.string.isRequired,
+  id: PropTypes.number,
+  src: PropTypes.string,
+  isActive: PropTypes.bool,
+  isRight: PropTypes.oneOfType([PropTypes.bool, PropTypes.oneOf([null])]),
+  cardClick: PropTypes.func,
+  value: PropTypes.string,
 };
 export default Card;

@@ -1,57 +1,48 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import Card from "./Components/Card/Card";
 import cardActions from "./redux/cards/actions";
-import WinModal from "./Components/WinModal/WinModal";
-import LoseModal from "./Components/LoseModal/LoseModal";
-import shuffleArray from "./helper/shuffleArray";
 import Timer from "./Components/Timer/Timer";
+import EndGameModal from "./Components/EndGameModal/EndGameModal";
 
 function App() {
-  const { cards, activeCards, rightCards, wrongCards } = useSelector(
-    (store) => store.cardReducer
-  );
+  const { cards } = useSelector((store) => store.cardReducer);
+  const [activeCardsCount, setActiveCardsCount] = useState(0);
   const [isTimerStart, setIsTimerStart] = useState(false);
   const [timer, setTimer] = useState(60);
-  const [isWin, setIsWin] = useState(false);
-  const [isLose, setIsLose] = useState(false);
+  const [isWin, setIsWin] = useState(null);
+  const [isShowModal, setShowModal] = useState(false);
 
   const dispatch = useDispatch();
-
-  const cardClick = (cardIsRight, cardIsWrong, cardId) => {
+  const cardClick = (isCardActive, isRight, cardId) => {
     if (!isTimerStart) setIsTimerStart(true);
-    if (!cardIsRight && !cardIsWrong) {
-      if (activeCards.length === 2) {
+    if (!isCardActive && isRight === null) {
+      if (activeCardsCount === 2) {
         dispatch(cardActions.removeActiveCards());
-      }
-      dispatch(cardActions.addActiveCard(cardId));
-      if (wrongCards.length) {
         dispatch(cardActions.removeWrongCards());
       }
+      dispatch(cardActions.addActiveCard(cardId));
     }
   };
-  const playAgainHanlder = () => {
-    setTimer(60);
-    setIsWin(false);
-    setIsLose(false);
-    dispatch(cardActions.removeActiveCards());
-    dispatch(cardActions.removeWrongCards());
-    dispatch(cardActions.removeRightCards());
-    const newOrderArray = shuffleArray([...cards]);
-    dispatch(cardActions.setCardsNewOrder(newOrderArray));
-  };
-
   useEffect(() => {
-    if (activeCards.length === 2) {
-      const firstCard = cards.find((card) => card.id === activeCards[0]);
-      const secondCard = cards.find((card) => card.id === activeCards[1]);
+    if (activeCardsCount + 1 === 2) {
+      const [firstCard, secondCard] = cards.filter((card) => card.isActive);
       if (firstCard.value === secondCard.value) {
         dispatch(cardActions.addRightCards(firstCard.id, secondCard.id));
       } else {
         dispatch(cardActions.addWrongCards(firstCard.id, secondCard.id));
       }
     }
-  }, [activeCards]);
+    const count = cards.filter((card) => card.isActive).length;
+    setActiveCardsCount(count);
+  }, [cards]);
+
+  const playAgainHanlder = () => {
+    setTimer(60);
+    setIsWin(null);
+    setActiveCardsCount(0);
+    dispatch(cardActions.playAgain());
+  };
 
   useEffect(() => {
     let interval = null;
@@ -64,39 +55,41 @@ function App() {
   }, [isTimerStart]);
 
   useEffect(() => {
+    const rightCards = cards.filter((card) => card.isRight);
     if (rightCards.length && rightCards.length === cards.length) {
       setIsWin(true);
       setIsTimerStart(false);
     }
-  }, [rightCards]);
+  }, [cards]);
 
   useEffect(() => {
     if (!timer) {
       setIsTimerStart(false);
-      setIsLose(true);
+      setIsWin(false);
     }
   }, [timer]);
+
   useEffect(() => {
-    const newOrderArray = shuffleArray([...cards]);
-    dispatch(cardActions.setCardsNewOrder(newOrderArray));
-  }, []);
+    if (isWin !== null) {
+      setShowModal(true);
+    } else {
+      setShowModal(false);
+    }
+  }, [isWin]);
+
   return (
     <div className="container-md">
       <div className="d-flex flex-column aling-items-center justify-content-center py-5">
         <p className="fs-4 text-center ff-bold">Memoji</p>
         <div className="py-3 container-gap">
           {cards.map((cardInfo) => {
-            const isOpen = activeCards.find((id) => id === cardInfo.id);
-            const isRight = rightCards.find((id) => id === cardInfo.id);
-            const isWrong = wrongCards.find((id) => id === cardInfo.id);
             return (
               <Card
                 id={cardInfo.id}
                 value={cardInfo.value}
                 src={cardInfo.src}
-                isOpen={!!isOpen}
-                isRight={!!isRight}
-                isWrong={!!isWrong}
+                isActive={cardInfo.isActive}
+                isRight={cardInfo.isRight}
                 cardClick={cardClick}
                 key={`${cardInfo.value}${cardInfo.id}`}
               />
@@ -104,8 +97,11 @@ function App() {
           })}
         </div>
         <Timer timer={timer} />
-        <WinModal show={isWin} handleClose={playAgainHanlder} />
-        <LoseModal show={isLose} handleClose={playAgainHanlder} />
+        <EndGameModal
+          show={isShowModal}
+          handleClose={playAgainHanlder}
+          isWin={isWin}
+        />
       </div>
     </div>
   );

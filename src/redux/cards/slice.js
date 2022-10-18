@@ -7,25 +7,36 @@ import Pupet from "../../img/pupet.png";
 import WaterCat from "../../img/water-cat.png";
 import Cat2 from "../../img/cat-2.png";
 import Waiter from "../../img/waiter.png";
+import findCardIndex from "../../helper/findCardIndex";
+import shuffleArray from "../../helper/shuffleArray";
 
 const initialState = {
   cards: [
-    { id: 1, value: "dog", src: Dog },
-    { id: 2, value: "cat", src: Cat },
-    { id: 3, value: "pupet", src: Pupet },
-    { id: 4, value: "water-cat", src: WaterCat },
-    { id: 5, value: "cat2", src: Cat2 },
-    { id: 6, value: "waiter", src: Waiter },
-    { id: 7, value: "dog", src: Dog },
-    { id: 8, value: "cat", src: Cat },
-    { id: 9, value: "pupet", src: Pupet },
-    { id: 10, value: "water-cat", src: WaterCat },
-    { id: 11, value: "cat2", src: Cat2 },
-    { id: 12, value: "waiter", src: Waiter },
+    { id: 1, value: "dog", src: Dog, isRight: null, isActive: false },
+    { id: 2, value: "cat", src: Cat, isRight: null, isActive: false },
+    { id: 3, value: "pupet", src: Pupet, isRight: null, isActive: false },
+    {
+      id: 4,
+      value: "water-cat",
+      src: WaterCat,
+      isRight: null,
+      isActive: false,
+    },
+    { id: 5, value: "cat2", src: Cat2, isRight: null, isActive: false },
+    { id: 6, value: "waiter", src: Waiter, isRight: null, isActive: false },
+    { id: 7, value: "dog", src: Dog, isRight: null, isActive: false },
+    { id: 8, value: "cat", src: Cat, isRight: null, isActive: false },
+    { id: 9, value: "pupet", src: Pupet, isRight: null, isActive: false },
+    {
+      id: 10,
+      value: "water-cat",
+      src: WaterCat,
+      isRight: null,
+      isActive: null,
+    },
+    { id: 11, value: "cat2", src: Cat2, isRight: null, isActive: null },
+    { id: 12, value: "waiter", src: Waiter, isRight: null, isActive: null },
   ],
-  activeCards: [],
-  rightCards: [],
-  wrongCards: [],
 };
 
 const cardReducer = createSlice({
@@ -35,29 +46,43 @@ const cardReducer = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(cardActions.addActiveCard, (state, action) => {
-        state.activeCards.push(action.payload.cardId);
+        const index = findCardIndex(action.payload.cardId, state.cards);
+        state.cards[index].isActive = true;
       })
       .addCase(cardActions.removeActiveCards, (state) => {
-        state.activeCards = [];
+        state.cards = state.cards.map((card) => {
+          return { ...card, isActive: false };
+        });
       })
       .addCase(cardActions.removeWrongCards, (state) => {
-        state.wrongCards = [];
+        const newCards = state.cards.map((card) => {
+          if (card.isRight === false) {
+            return { ...card, isRight: null };
+          }
+          return card;
+        });
+        state.cards = newCards;
       })
       .addCase(cardActions.addRightCards, (state, action) => {
         const { firstCardId, secondCardId } = action.payload;
-        state.rightCards.push(firstCardId);
-        state.rightCards.push(secondCardId);
+        const firstCardIndex = findCardIndex(firstCardId, state.cards);
+        const secondCardIndex = findCardIndex(secondCardId, state.cards);
+        state.cards[firstCardIndex].isRight = true;
+        state.cards[secondCardIndex].isRight = true;
       })
       .addCase(cardActions.addWrongCards, (state, action) => {
         const { firstCardId, secondCardId } = action.payload;
-        state.wrongCards.push(firstCardId);
-        state.wrongCards.push(secondCardId);
+        const firstCardIndex = findCardIndex(firstCardId, state.cards);
+        const secondCardIndex = findCardIndex(secondCardId, state.cards);
+        state.cards[firstCardIndex].isRight = false;
+        state.cards[secondCardIndex].isRight = false;
       })
-      .addCase(cardActions.removeRightCards, (state) => {
-        state.rightCards = [];
-      })
-      .addCase(cardActions.setCardsNewOrder, (state, action) => {
-        state.cards = action.payload.newOrder;
+      .addCase(cardActions.playAgain, (state) => {
+        let newCards = state.cards.map((card) => {
+          return { ...card, isRight: null, isActive: false };
+        });
+        newCards = shuffleArray(newCards);
+        state.cards = newCards;
       });
   },
 });

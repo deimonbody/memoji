@@ -8,6 +8,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "bootstrap": "^5.2.2",
+    "classnames": "^2.3.2",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "prop-types": "^15.8.1",

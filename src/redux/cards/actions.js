@@ -5,9 +5,7 @@ const addRightCardsAction = "add-right-cards";
 const addWrongCardsAction = "add-wrong-cards";
 const removeActiveCardsAction = "remove-active-cards";
 const removeWrongCardsAction = "remove-wrong-cards";
-const removeRightCardsAction = "remove-right-cards";
-const setCardsNewOrderAction = "set-cards-new-order";
-
+const playAgainAction = "play-again";
 const addActiveCard = createAction(addActiveCardAction, (id) => {
   return {
     payload: {
@@ -42,14 +40,7 @@ const addWrongCards = createAction(
 
 const removeActiveCards = createAction(removeActiveCardsAction);
 const removeWrongCards = createAction(removeWrongCardsAction);
-const removeRightCards = createAction(removeRightCardsAction);
-const setCardsNewOrder = createAction(setCardsNewOrderAction, (newOrder) => {
-  return {
-    payload: {
-      newOrder,
-    },
-  };
-});
+const playAgain = createAction(playAgainAction);
 
 export default {
   addActiveCard,
@@ -57,6 +48,5 @@ export default {
   addWrongCards,
   removeActiveCards,
   removeWrongCards,
-  removeRightCards,
-  setCardsNewOrder,
+  playAgain,
 };

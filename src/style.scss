@@ -37,54 +37,50 @@ body{
     font-family: 'Roboto-Bold';
 }
 
-@keyframes close {
-    0% {
-        -webkit-transform: rotateY(180deg);
-                transform: rotateY(180deg);
-      }
-      100% {
-        -webkit-transform: rotateY(0deg);
-                transform: rotateY(0deg);
-      }
-}
-@keyframes open {
-    0% {
-      -webkit-transform: rotateY(-80deg);
-              transform: rotateY(-80deg);
-      opacity: 0;
-    }
-    100% {
-      -webkit-transform: rotateY(0);
-              transform: rotateY(0);
-      opacity: 1;
-    }
-  }
-
 .custom-card {
     img{
-        width:80%;
-        height: 80%;
+        width:100%;
+        height: 100%;
         object-fit: contain;
-        position: absolute;
-        top:50%;
-        left:50%;
-        transform: translate(-50%,-50%);
     }
     min-height: 170px;
     cursor: pointer;
+    perspective: 1000px;
+}
+
+.card-inner{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding-top: 52.65%;
+    text-align: center;
+    transition: transform .3s;
+    transform-style: preserve-3d;
+    transform: rotateY(0);
+}
+.card-front{
+
+    background-color: $main-color;
+    border: 4px solid $white-color;
+}
+.card-back{
+    background-color: $white-color;
+    border: 4px solid $main-color;
+    transform: rotateY(180deg);
+}
+.card-front,.card-back{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+.card-animation-open{
+    transform: rotateY(180deg);
 }
 .card {
-    &-closed{
-        background-color: $main-color;
-        border: 4px solid $white-color;
-        animation: close 0.4s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-    } 
-    &-open{
-        background-color: $white-color;
-        position: relative;
-        border: 4px solid $main-color;
-        animation: open 0.4s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-    } 
     &-wrong{
         background-color: $wrong-color;
     }

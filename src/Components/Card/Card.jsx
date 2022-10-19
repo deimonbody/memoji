@@ -1,24 +1,32 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
 function Card({ id, src, isActive, isRight, cardClick, value }) {
+  const cardInner = useRef(null);
+
+  useEffect(() => {
+    if (isActive || isRight) {
+      cardInner.current.classList.add("card-animation-open");
+    } else {
+      cardInner.current.classList.remove("card-animation-open");
+    }
+  }, [isActive, isRight]);
+
   const clickHanlder = () => {
     cardClick(isActive, isRight, id);
   };
-  const containerClassName = classNames("custom-card", {
-    "card-open": isActive || isRight,
-    "card-closed": !isActive,
+  const cardBackClassName = classNames("card-back", {
     "card-right": isRight,
     "card-wrong": isRight === false,
   });
-  const imgClassName = classNames({
-    "d-none": !isActive && !isRight,
-  });
   return (
-    <div className={containerClassName} onClick={clickHanlder}>
-      <div className="w-100 h-100">
-        <img className={imgClassName} src={src} alt={value} />
+    <div className="custom-card" onClick={clickHanlder}>
+      <div className="card-inner" ref={cardInner}>
+        <div className={cardBackClassName}>
+          <img src={src} alt={value} />
+        </div>
+        <div className="card-front" />
       </div>
     </div>
   );
